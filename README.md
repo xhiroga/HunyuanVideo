@@ -448,21 +448,8 @@ Here, you must explicitly specify the FP8 weight path. For example, to generate 
 ```bash
 cd HunyuanVideo
 
-DIT_CKPT_PATH={PATH_TO_FP8_WEIGHTS}/{WEIGHT_NAME}_fp8.pt
-
-python3 sample_video.py \
-    --dit-weight ${DIT_CKPT_PATH} \
-    --video-size 1280 720 \
-    --video-length 129 \
-    --infer-steps 50 \
-    --prompt "A cat walks on the grass, realistic style." \
-    --seed 42 \
-    --embedded-cfg-scale 6.0 \
-    --flow-shift 7.0 \
-    --flow-reverse \
-    --use-cpu-offload \
-    --use-fp8 \
-    --save-path ./results
+make install
+make run
 ```
 
 
