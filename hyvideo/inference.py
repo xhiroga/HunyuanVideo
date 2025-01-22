@@ -509,6 +509,7 @@ class HunyuanVideoSampler(Inference):
         embedded_guidance_scale=None,
         batch_size=1,
         num_videos_per_prompt=1,
+        init_latents=None,
         **kwargs,
     ):
         """
@@ -653,6 +654,7 @@ class HunyuanVideoSampler(Inference):
             negative_prompt=negative_prompt,
             num_videos_per_prompt=num_videos_per_prompt,
             generator=generator,
+            latents=init_latents,
             output_type="pil",
             freqs_cis=(freqs_cos, freqs_sin),
             n_tokens=n_tokens,

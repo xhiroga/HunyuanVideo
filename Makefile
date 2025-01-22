@@ -11,7 +11,9 @@ run:
     --flow-reverse \
     --use-cpu-offload \
     --use-fp8 \
-    --save-path ./results
+    --save-path ./results \
+	--init-image ./assets/Persian_cat.jpeg
+
 
 install: .venv ckpts/hunyuan-video-t2v-720p ckpts/text_encoder ckpts/text_encoder_2
 	.venv/bin/pip install torch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0

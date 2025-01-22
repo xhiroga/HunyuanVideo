@@ -580,11 +580,16 @@ class HunyuanVideoPipeline(DiffusionPipeline):
                 f" size of {batch_size}. Make sure the batch size matches the length of the generators."
             )
 
-        if latents is None:
-            latents = randn_tensor(
+        randn_latents = randn_tensor(
                 shape, generator=generator, device=device, dtype=dtype
             )
+        if latents is None:
+            latents = randn_latents
         else:
+            latents_video_length = latents.shape[2]
+            if latents_video_length < video_length:
+                rest_latents = randn_latents[:, :, latents_video_length:, :, :]
+                latents = torch.cat([latents, rest_latents], dim=2)
             latents = latents.to(device)
 
         # Check existence to make it compatible with FlowMatchEulerDiscreteScheduler
@@ -699,6 +704,7 @@ class HunyuanVideoPipeline(DiffusionPipeline):
         enable_tiling: bool = False,
         n_tokens: Optional[int] = None,
         embedded_guidance_scale: Optional[float] = None,
+        init_latents: Optional[torch.Tensor] = None,
         **kwargs,
     ):
         r"""

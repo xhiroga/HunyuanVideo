@@ -358,6 +358,13 @@ def add_inference_args(parser: argparse.ArgumentParser):
         help="Enable reproducibility by setting random seeds and deterministic algorithms.",
     )
 
+    group.add_argument(
+        "--init-image",
+        type=str,
+        default=None,
+        help="Initial image for sampling. If provided, the latent will be generated from the image.",
+    )
+
     return parser
 
 

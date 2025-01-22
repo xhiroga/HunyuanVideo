@@ -3,10 +3,12 @@ import time
 from pathlib import Path
 from loguru import logger
 from datetime import datetime
+import torch
 
 from hyvideo.utils.file_utils import save_videos_grid
 from hyvideo.config import parse_args
 from hyvideo.inference import HunyuanVideoSampler
+from PIL import Image
 
 
 def main():
@@ -24,6 +26,18 @@ def main():
     # Load models
     hunyuan_video_sampler = HunyuanVideoSampler.from_pretrained(models_root_path, args=args)
     
+    # Prepare initial latent if init_image is provided
+    init_latents = None
+    if args.init_image is not None:
+        init_image = Image.open(args.init_image).convert('RGB')
+        init_image = init_image.resize(args.video_size[::-1])
+
+        init_image_tensor = hunyuan_video_sampler.pipeline.image_processor.preprocess(init_image).to(hunyuan_video_sampler.device).to(torch.float16)
+        init_image_tensor = init_image_tensor.unsqueeze(2)
+        with torch.no_grad():
+            init_latents = hunyuan_video_sampler.pipeline.vae.encode(init_image_tensor).latent_dist.sample()
+            init_latents = hunyuan_video_sampler.pipeline.vae.config.scaling_factor * init_latents
+
     # Get the updated args
     args = hunyuan_video_sampler.args
 
@@ -41,7 +55,8 @@ def main():
         num_videos_per_prompt=args.num_videos,
         flow_shift=args.flow_shift,
         batch_size=args.batch_size,
-        embedded_guidance_scale=args.embedded_cfg_scale
+        embedded_guidance_scale=args.embedded_cfg_scale,
+        init_latents=init_latents,
     )
     samples = outputs['samples']
     
